@@ -1,172 +1,116 @@
-# Milestone 1 -- Single Agent (Hello Agent)
+# AgentStack - Project Master Plan
 
-## Goal
+## Vision
 
-Build the smallest possible agent-based application that establishes the
-foundation for the entire platform.
+Build an enterprise-grade, modular, observable, and extensible multi-agent platform that demonstrates how modern AI agents collaborate to solve complex tasks.
 
-By the end of this milestone you should have:
+The platform begins as a Research Swarm and evolves into a CRM automation platform supporting intelligent routing, enrichment, autonomous execution, and human-in-the-loop workflows.
 
--   A single FastAPI service acting as an agent
--   A fake LLM that returns deterministic responses
--   A simple LangGraph workflow
--   Dockerized deployment
--   Local execution using Docker Compose
--   A clean project structure that will scale into a multi-agent
-    platform
+## Project Goals
 
-------------------------------------------------------------------------
+- Multi-agent collaboration
+- A2A communication
+- LangGraph orchestration
+- Prompt management & versioning
+- Shared memory
+- Observability
+- Evaluation
+- Human approval
+- MCP integration
+- Real LLM support
+- Enterprise deployment
 
-# Learning Objectives
+## Guiding Principles
 
--   Understand the lifecycle of an agent
--   Separate transport (HTTP) from agent logic
--   Avoid coupling agent logic to a specific LLM
--   Establish reusable project conventions
+- Platform First
+- SDK First
+- Contract First
+- Observable by Default
+- Provider Agnostic
 
-------------------------------------------------------------------------
+## Repository Structure
 
-# Scope
-
-Included:
-
--   FastAPI API
--   LangGraph workflow
--   FakeLLM implementation
--   Prompt loading from files
--   Dockerfile
--   docker-compose.yml
--   Basic logging
--   Health endpoint
-
-Not included yet:
-
--   Multiple agents
--   A2A communication
--   Redis
--   Langfuse
--   Evaluation
--   Prompt versioning
--   Shared memory
--   Human approval
-
-------------------------------------------------------------------------
-
-# Suggested Project Structure
-
-``` text
-research-swarm/
-
+```text
+agentstack/
 ├── docker-compose.yml
+├── pyproject.toml
 ├── README.md
-│
-├── gateway/
-│
+├── Makefile
+├── .env.example
+├── .gitignore
+├── docs/
+├── platform/
 ├── agents/
-│   └── research/
-│       ├── app.py
-│       ├── graph.py
-│       ├── fake_llm.py
-│       ├── prompts/
-│       │   └── research_v1.md
-│       ├── Dockerfile
-│       └── requirements.txt
-│
-├── shared/
-│   ├── models.py
-│   ├── logging.py
-│   └── config.py
-│
-└── docs/
+├── infrastructure/
+└── tests/
 ```
 
-------------------------------------------------------------------------
+## Technology Stack
 
-# Agent Flow
+- Python 3.12
+- uv
+- FastAPI
+- LangGraph
+- Pydantic v2
+- Ruff
+- Pytest
+- Docker
+- Docker Compose
+- Redis (later)
+- Langfuse (later)
+- A2A
+- MCP
+- FakeLLM → Ollama/OpenAI/Bedrock
 
-``` text
-HTTP Request
-      │
-      ▼
-FastAPI Endpoint
-      │
-      ▼
-LangGraph
-      │
-      ▼
-Load Prompt
-      │
-      ▼
-Fake LLM
-      │
-      ▼
-Validate Output
-      │
-      ▼
-Return JSON
-```
+## Milestone Roadmap
 
-------------------------------------------------------------------------
+1. Platform Bootstrap
+2. Agent SDK
+3. LangGraph Runtime
+4. Supervisor
+5. A2A Communication
+6. Memory
+7. Prompt Platform
+8. Observability
+9. Evaluation
+10. Enterprise Runtime
 
-# Fake LLM
+## Deliverables Per Milestone
 
-Implement a simple class with an `invoke(prompt: str)` method.
+- Updated README
+- Updated Architecture
+- Updated Sequence Diagrams
+- Updated ADRs
+- Updated Roadmap
+- Makefile
+- Docker Compose
+- .env.example
+- .gitignore
+- API Collection
+- Unit Tests
+- Integration Tests
+- Validation Checklist
+- Release Notes
 
-Expected behaviour:
+## Definition of Done
 
--   If prompt contains "research"
-    -   return a predefined summary
--   Otherwise
-    -   return a generic response
+- Tests pass
+- Docker Compose builds
+- Documentation updated
+- Diagrams updated
+- ADRs updated
+- Runs from clean clone
+- Ready for Git tag
 
-No external APIs should be required.
+## Cursor Development Instructions
 
-------------------------------------------------------------------------
+- Use type hints everywhere.
+- Keep business logic out of FastAPI handlers.
+- Store prompts as Markdown.
+- Use Pydantic models.
+- Update docs, diagrams, ADRs and tests with every feature.
+- Avoid unnecessary dependencies.
 
-# Deliverables
+## Long-Term Vision
 
--   [ ] Project skeleton created
--   [ ] Agent runs locally
--   [ ] Docker image builds
--   [ ] Docker Compose starts successfully
--   [ ] POST endpoint returns JSON
--   [ ] Prompt loaded from file
--   [ ] LangGraph executes successfully
--   [ ] Fake LLM integrated
--   [ ] README explains how to run
-
-------------------------------------------------------------------------
-
-# Acceptance Criteria
-
-Running:
-
-``` bash
-docker compose up --build
-```
-
-should allow:
-
-``` http
-POST /research
-
-{
-  "query": "Artificial Intelligence in Banking"
-}
-```
-
-and produce a deterministic JSON response.
-
-------------------------------------------------------------------------
-
-# Future Milestones
-
--   Milestone 2 --- LangGraph enhancements
--   Milestone 3 --- Supervisor + multiple agents
--   Milestone 4 --- A2A communication
--   Milestone 5 --- Shared memory (Redis)
--   Milestone 6 --- Prompt registry & versioning
--   Milestone 7 --- Langfuse observability
--   Milestone 8 --- Evaluation service
--   Milestone 9 --- Human-in-the-loop
--   Milestone 10 --- Replace FakeLLM with a real model
+AgentStack becomes a reusable enterprise AI platform for CRM, document intelligence, research, and financial assistant use cases.

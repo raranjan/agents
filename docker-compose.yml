@@ -2,12 +2,13 @@ services:
   research:
     build:
       context: .
-      dockerfile: agents/research/Dockerfile
+      dockerfile: infrastructure/docker/research.Dockerfile
     ports:
-      - "8000:8000"
+      - "${PORT:-8000}:8000"
     environment:
-      - LOG_LEVEL=INFO
+      LOG_LEVEL: ${LOG_LEVEL:-INFO}
+      APP_NAME: ${APP_NAME:-research-agent}
     volumes:
-      - ./agents/research:/app/agents/research
-      - ./shared:/app/shared
+      - ./platform:/app/platform
+      - ./agents:/app/agents
     command: uvicorn agents.research.app:app --host 0.0.0.0 --port 8000 --reload
