@@ -4,4 +4,5 @@ collections/bruno/.env
 .env
 .env.example
 __pycache__/
+**/__pycache__/
 *.pyc
