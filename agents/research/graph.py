@@ -3,8 +3,11 @@ from typing import TypedDict
 
 from langgraph.graph import END, StateGraph
 
-from agentstack.sdk.prompts import load_prompt, render_prompt
+from shared.observability import get_langfuse
+from shared.sdk.llm import LLMClient
+from shared.sdk.prompts import load_prompt, render_prompt
 from agents.research.fake_llm import FakeLLM
+from shared.sdk.ollama import OllamaLLM
 
 PROMPT_PATH = Path(__file__).parent / "prompts" / "research_v1.md"
 
@@ -17,15 +20,33 @@ class ResearchState(TypedDict):
 
 
 def load_prompt_node(state: ResearchState) -> ResearchState:
+    langfuse = get_langfuse()
+    if langfuse:
+        langfuse.create_event(name="load_prompt", input=state)
+    
     template = load_prompt(PROMPT_PATH)
     prompt = render_prompt(template, query=state["query"])
-    return {**state, "prompt": prompt}
+    result = {**state, "prompt": prompt}
+    
+    if langfuse:
+        langfuse.create_event(name="load_prompt", output=result)
+    
+    return result
 
 
-def invoke_llm_node(state: ResearchState, llm: FakeLLM | None = None) -> ResearchState:
-    client = llm or FakeLLM()
+def invoke_llm_node(state: ResearchState, llm: LLMClient | None = None) -> ResearchState:
+    langfuse = get_langfuse()
+    if langfuse:
+        langfuse.create_event(name="invoke_llm", input=state)
+    
+    client = llm or OllamaLLM()
     summary = client.invoke(state["prompt"])
-    return {**state, "summary": summary}
+    result = {**state, "summary": summary}
+    
+    if langfuse:
+        langfuse.create_event(name="invoke_llm", output=result)
+    
+    return result
 
 
 def validate_output_node(state: ResearchState) -> ResearchState:
@@ -35,7 +56,7 @@ def validate_output_node(state: ResearchState) -> ResearchState:
     return {**state, "summary": summary, "status": "success"}
 
 
-def build_research_graph(llm: FakeLLM | None = None):
+def build_research_graph(llm: LLMClient | None = None):
     graph = StateGraph(ResearchState)
     graph.add_node("load_prompt", load_prompt_node)
     graph.add_node(
@@ -50,6 +71,16 @@ def build_research_graph(llm: FakeLLM | None = None):
     return graph.compile()
 
 
-def run_research(query: str, llm: FakeLLM | None = None) -> ResearchState:
+def run_research(query: str, llm: LLMClient | None = None) -> ResearchState:
+    langfuse = get_langfuse()
+    if langfuse:
+        langfuse.create_event(name="research_workflow", input={"query": query})
+    
     graph = build_research_graph(llm=llm)
-    return graph.invoke({"query": query, "prompt": "", "summary": "", "status": "pending"})
+    result = graph.invoke({"query": query, "prompt": "", "summary": "", "status": "pending"})
+    
+    if langfuse:
+        langfuse.create_event(name="research_workflow", output=result)
+        langfuse.flush()
+    
+    return result

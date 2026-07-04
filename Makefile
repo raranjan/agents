@@ -1,6 +1,6 @@
 .PHONY: help install test test-unit test-integration up down build logs clean
 
-PYTHONPATH := platform:.
+PYTHONPATH := shared:.
 DOCKER_COMPOSE := docker compose
 
 help:

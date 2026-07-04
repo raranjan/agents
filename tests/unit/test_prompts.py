@@ -1,10 +1,12 @@
 from pathlib import Path
 
-from agentstack.sdk.prompts import load_prompt, render_prompt
+from shared.sdk.prompts import load_prompt, render_prompt
 
 
 def test_load_prompt_reads_file():
-    path = Path("agents/research/prompts/research_v1.md")
+    # Resolve path relative to test file location
+    test_dir = Path(__file__).parent.parent.parent
+    path = test_dir / "agents" / "research" / "prompts" / "research_v1.md"
     content = load_prompt(path)
     assert "research assistant" in content.lower()
 

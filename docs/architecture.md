@@ -8,15 +8,15 @@ AgentStack separates shared platform code from individual agent services so new 
 flowchart TB
     Client[HTTP Client / Gateway]
     Research[Research Agent Service]
-    Platform[AgentStack Platform SDK]
+    Shared[Shared SDK]
     Prompts[Prompt Files]
     FakeLLM[FakeLLM]
 
     Client -->|POST /research| Research
-    Research --> Platform
+    Research --> Shared
     Research --> Prompts
     Research --> FakeLLM
-    Platform -->|LLMClient protocol| FakeLLM
+    Shared -->|LLMClient protocol| FakeLLM
 ```
 
 ## Layering
@@ -26,7 +26,7 @@ flowchart TB
 | Transport | `agents/*/app.py` | HTTP routing, request/response models |
 | Workflow | `agents/*/graph.py` | LangGraph state machine |
 | LLM adapter | `agents/*/fake_llm.py` | Deterministic model stub (swap for real LLM later) |
-| Platform SDK | `platform/agentstack/` | Config, logging, shared models, abstractions |
+| Shared SDK | `shared/` | Config, logging, shared models, abstractions |
 
 ## Research agent sequence
 
@@ -51,6 +51,6 @@ sequenceDiagram
 
 ## Scaling to multi-agent
 
-Future agents follow the same pattern under `agents/<name>/`, reusing `platform/agentstack`. A gateway or supervisor (Milestone 3+) will route requests without changing individual agent internals.
+Future agents follow the same pattern under `agents/<name>/`, reusing `shared/`. A gateway or supervisor (Milestone 3+) will route requests without changing individual agent internals.
 
 See [ADR 001](adr/001-repository-structure.md) for structural decisions.

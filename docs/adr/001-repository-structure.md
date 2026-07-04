@@ -13,7 +13,7 @@ We need a repository layout that supports a single research agent today and mult
 Adopt the AgentStack layout:
 
 ```text
-platform/          # Shared SDK (Python package: agentstack)
+shared/            # Shared SDK
 agents/            # One folder per agent service
 infrastructure/    # Docker and future IaC
 docs/              # Architecture, roadmap, ADRs
@@ -22,18 +22,18 @@ tests/             # Unit and integration tests
 
 Additional conventions:
 
-1. **Python package name `agentstack`** lives under `platform/` to avoid clashing with the stdlib `platform` module.
-2. **`PYTHONPATH=platform:.`** so agents import `agentstack.*` and `agents.*`.
+1. **Python package `shared`** provides config, logging, models, and SDK abstractions.
+2. **`PYTHONPATH=shared:.`** so agents import `shared.*` and `agents.*`.
 3. **HTTP stays thin** — `app.py` delegates to `graph.py`.
 4. **LLM abstraction** — agents use `LLMClient` protocol; FakeLLM is swappable.
 
 ## Consequences
 
 - Adding a new agent means a new folder under `agents/` plus an optional Dockerfile under `infrastructure/docker/`.
-- Shared models and config change in one place (`platform/agentstack/`).
-- Docker build copies `platform/` and `agents/` with a fixed `PYTHONPATH`.
+- Shared models and config change in one place (`shared/`).
+- Docker build copies `shared/` and `agents/` with a fixed `PYTHONPATH`.
 
 ## Alternatives considered
 
-- **`shared/` at repo root** — rejected; bootstrap standardizes on `platform/`.
-- **Monorepo with `src/agentstack`** — deferred; current layout matches milestone docs and keeps paths shallow.
+- **`platform/` at repo root** — rejected; conflicts with Python stdlib `platform` module.
+- **Monorepo with `src/shared`** — deferred; current layout keeps paths shallow.

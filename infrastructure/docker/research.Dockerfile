@@ -4,12 +4,12 @@ WORKDIR /app
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    PYTHONPATH=/app/platform:/app
+    PYTHONPATH=/app/shared:/app
 
 COPY requirements.txt /app/requirements.txt
 RUN pip install --no-cache-dir -r /app/requirements.txt
 
-COPY platform /app/platform
+COPY shared /app/shared
 COPY agents /app/agents
 
 EXPOSE 8000

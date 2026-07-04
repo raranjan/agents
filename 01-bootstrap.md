@@ -16,7 +16,7 @@ tests - CHANGELOG
 
 ``` text
 agentstack/
-├── platform/
+├── shared/
 ├── agents/
 ├── infrastructure/
 ├── docs/

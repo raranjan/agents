@@ -1,4 +1,37 @@
 services:
+  langfuse:
+    image: langfuse/langfuse:2.50.0
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@langfuse-db:5432/langfuse?sslmode=disable
+      NEXTAUTH_SECRET: local-secret
+      NEXTAUTH_URL: http://localhost:3000
+      SALT: local-salt
+    depends_on:
+      - langfuse-db
+
+  langfuse-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: langfuse
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - langfuse-db-data:/var/lib/postgresql/data
+    command:
+      - "postgres"
+      - "-c"
+      - "listen_addresses=*"
+      - "-c"
+      - "ssl=off"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   research:
     build:
       context: .
@@ -8,7 +41,22 @@ services:
     environment:
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
       APP_NAME: ${APP_NAME:-research-agent}
+      LANGFUSE_ENABLED: ${LANGFUSE_ENABLED:-true}
+      LANGFUSE_PUBLIC_KEY: ${LANGFUSE_PUBLIC_KEY:-}
+      LANGFUSE_SECRET_KEY: ${LANGFUSE_SECRET_KEY:-}
+      LANGFUSE_HOST: ${LANGFUSE_HOST:-http://langfuse:3000}
     volumes:
-      - ./platform:/app/platform
+      - ./shared:/app/shared
       - ./agents:/app/agents
     command: uvicorn agents.research.app:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      - langfuse
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+volumes:
+  langfuse-db-data:

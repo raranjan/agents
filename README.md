@@ -6,12 +6,11 @@ Multi-agent platform bootstrap — a single research agent with shared SDK, Lang
 
 ```text
 .
-├── platform/                 # Shared SDK (agentstack package)
-│   └── agentstack/
-│       ├── config.py
-│       ├── logging.py
-│       ├── models.py
-│       └── sdk/              # LLM protocol, prompt helpers
+├── shared/                  # Shared SDK
+│   ├── config.py
+│   ├── logging.py
+│   ├── models.py
+│   └── sdk/              # LLM protocol, prompt helpers
 ├── agents/
 │   └── research/             # Research agent (HTTP + graph)
 ├── infrastructure/
@@ -43,6 +42,12 @@ pip install -r requirements.txt
 docker compose up --build
 ```
 
+### Langfuse Observability
+
+Langfuse runs locally via Docker Compose. Access the UI at [http://localhost:3000](http://localhost:3000).
+
+API keys are configured in `.env.example` and enabled by default for Docker Compose. To disable Langfuse tracing, set `LANGFUSE_ENABLED=false` in `.env`.
+
 Service URL: [http://localhost:8000](http://localhost:8000)
 
 ## API
@@ -71,7 +76,7 @@ OpenAPI: [http://localhost:8000/docs](http://localhost:8000/docs)
 make test
 
 # Run agent locally (no Docker)
-export PYTHONPATH=platform:.
+export PYTHONPATH=shared:.
 uvicorn agents.research.app:app --reload
 ```
 

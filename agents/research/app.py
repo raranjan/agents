@@ -3,9 +3,9 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException
 
-from agentstack.config import get_settings
-from agentstack.logging import setup_logging
-from agentstack.models import HealthResponse, ResearchRequest, ResearchResponse
+from shared.config import get_settings
+# from shared.logging import setup_logging
+from shared.models import HealthResponse, ResearchRequest, ResearchResponse
 from agents.research.graph import run_research
 
 logger = logging.getLogger(__name__)
@@ -14,7 +14,7 @@ settings = get_settings()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    setup_logging()
+    # setup_logging()
     logger.info("Starting %s", settings.app_name)
     yield
 
